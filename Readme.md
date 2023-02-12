@@ -4,7 +4,7 @@ Galaxite is a simple HTTP server built using Node.js. The purpose of this server
 
 ## Features
 
-- Supports HTTP methods: GET, POST, PUT, DELETE, and PATCH.
+- Supports HTTP methods: GET, POST, PUT, DELETE, HEAD and OPTIONS.
 - Accepts and parses incoming request bodies in multiple formats (JSON, multipart/form-data, url-encoded).
 - Supports custom routes and handler functions.
 - Simple and easy to use API.
