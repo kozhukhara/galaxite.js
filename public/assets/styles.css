@@ -1,0 +1,8 @@
+body {
+    background-color: deeppink;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: monospace;
+}

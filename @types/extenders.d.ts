@@ -1,4 +1,6 @@
-declare interface ResponseHelpers {
+import { ServerResponse } from "http";
+
+declare interface ResponseHelpers extends ServerResponse{
   status(statusCode: number): this;
   send(text: string): this;
   html(html: string): this;
@@ -17,14 +19,4 @@ declare interface ResponseHelpers {
     }
   ): void;
   deleteCookie(key: string): void;
-}
-
-declare interface ServerOptions {
-  cors: {
-    enabled: boolean;
-    origins: string[];
-    methods: string[];
-    maxAge: number;
-  };
-  uploadDir: string;
 }

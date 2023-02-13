@@ -7,7 +7,6 @@ const ResponseHelpers = {
     return this;
   },
   send(text) {
-    this.setHeader("Content-Type", "text/plain");
     this.end(text);
     return this;
   },
@@ -48,16 +47,6 @@ const ResponseHelpers = {
     this.setCookie(key, '', { maxAge: new Date(0) });
   }
 };
-
-const defaultOptions = {
-  cors: {
-    enabled: false,
-    origin: ['*'],
-    methods: ["POST", "GET"],
-    maxAge: 86400
-  },
-  uploadDir: './tmp'
-}
 
 class ServerOptions {
   constructor({ cors, uploadDir }) {
