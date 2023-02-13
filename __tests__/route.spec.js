@@ -21,6 +21,7 @@ describe('Router', () => {
         a: Array.from({ length: 3 }, () => (~~(Math.random() * 100)).toString()),
         b: Date.now().toString(32)
     }
+    let path = `/echo/${params.timestamp}/${params.slug}`;
     beforeAll((done) => {
         server.listen(port, () => done());
     });
@@ -46,7 +47,7 @@ describe('Router', () => {
             data += chunk;
         });
         response.on('end', () => {
-            expect(data).toEqual(JSON.stringify({ query, params }));
+            expect(data).toEqual(JSON.stringify({ query, path, params }));
             done();
         });
     });
