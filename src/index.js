@@ -7,7 +7,7 @@ class GalaxiteServer {
 
   constructor(options = {}) {
     this.options = new ServerOptions(options);
-    this.routes = [];
+    this.routes = new Set();
     this.middlewares = [];
   }
 
@@ -45,7 +45,10 @@ class GalaxiteServer {
       endpoint = endpoint.substring(0, endpoint.length - 1);
     let regex = patternToRegex(endpoint);
     let params = extractParamNames(endpoint);
-    this.routes.push({
+    for (const route of this.routes) {
+      if (route.method === method && String(route.regex) === String(regex)) throw new Error(`Duplicate endpoint found: ${method} ${endpoint}`)
+    }
+    this.routes.add({
       method,
       handler,
       regex,
