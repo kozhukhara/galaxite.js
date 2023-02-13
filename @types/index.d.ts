@@ -1,3 +1,4 @@
+import { IncomingMessage, ServerResponse } from "http";
 declare class GalaxiteServer {
   options: ServerOptions;
   routes: Array<Route>;
@@ -31,13 +32,23 @@ interface Route {
 }
 
 type Middleware = (
-  req: http.IncomingMessage,
-  res: http.ServerResponse,
+  req: IncomingMessage,
+  res: ServerResponse,
   next: Next
 ) => Next;
 
-type Handler = (req: http.IncomingMessage, res: http.ServerResponse) => http.ServerResponse;
+type Handler = (req: IncomingMessage, res: ServerResponse) => ServerResponse;
 
 type Next = (middleware: Middleware) => void;
 
 type Callback = (err?: any) => void;
+
+declare interface ServerOptions {
+  cors: {
+    enabled: boolean;
+    origins: string[];
+    methods: string[];
+    maxAge: number;
+  };
+  uploadDir: string;
+}

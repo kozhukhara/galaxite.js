@@ -1,27 +1,32 @@
 const GalaxiteServer = require('../src/index.js');
 const http = require('http');
 const qs = require('querystring');
+const fs = require('fs');
 
-describe('Router', () => {
+describe('HTTP headers', () => {
     let request;
     let response;
     const port = 3000;
     const server = new GalaxiteServer({ cors: { enabled: true, origin: ['*'], methods: ["POST", "GET"] }, uploadDir: './tmp' });
     server
-        .route("/echo/:timestamp/*")
-        .get((req, res) => {
-            return res.status(200).json({ ...req.route });
+        .route("/echo/file")
+        .head((req, res) => {
+            const fileSize = fs.statSync("../Readme.md").size;
+            res.setHeader('Content-Type', 'text/markdown');
+            res.setHeader('Content-Length', fileSize);
+            return
         })
 
     let params = {
         timestamp: Date.now().toString(),
         slug: Date.now().toString(32)
-    }
+    };
+
     let query = {
         a: Array.from({ length: 3 }, () => (~~(Math.random() * 100)).toString()),
         b: Date.now().toString(32)
-    }
-    let path = `/echo/${params.timestamp}/${params.slug}`;
+    };
+
     beforeAll((done) => {
         server.listen(port, () => done());
     });
@@ -30,25 +35,20 @@ describe('Router', () => {
         server.close(done);
     });
 
-    beforeEach((done) => {
+    it('Returns file with known Content-Length', async () => {
+        const fileSize = fs.statSync("../Readme.md").size;
         request = http.get({
             host: 'localhost',
             port,
-            path: `/echo/${params.timestamp}/${params.slug}?${qs.stringify(query)}`,
+            path: '/echo/file',
         }, (res) => {
-            response = res;
+            // response = res;
+            console.log(res.headers)
             done();
         });
-    });
-
-    it('Parses route params and query string correctly', (done) => {
-        let data = '';
-        response.on('data', (chunk) => {
-            data += chunk;
-        });
-        response.on('end', () => {
-            expect(data).toEqual(JSON.stringify({ query, path, params }));
-            done();
-        });
+        // response.on('end', () => {
+        //     expect(data).toEqual(JSON.stringify({ query, params }));
+        //     done();
+        // });
     });
 });
