@@ -1,10 +1,7 @@
 const http = require("http");
-const { patternToRegex, extractParamNames, getBody, qs, parseCookies } = require("./lib/parsers");
+const { patternToRegex, extractParamNames, getBody, qs, parseCookies, pathExists, provideFile } = require("./lib/parsers");
 const { ResponseHelpers, ServerOptions } = require("./lib/extenders");
 class GalaxiteServer {
-  #routes;
-  #middlewares;
-
   constructor(options = {}) {
     this.options = new ServerOptions(options);
     this.routes = new Set();
@@ -45,9 +42,13 @@ class GalaxiteServer {
       endpoint = endpoint.substring(0, endpoint.length - 1);
     let regex = patternToRegex(endpoint);
     let params = extractParamNames(endpoint);
-    for (const route of this.routes) {
-      if (route.method === method && String(route.regex) === String(regex)) throw new Error(`Duplicate endpoint found: ${method} ${endpoint}`)
+
+    for (const r of this.routes) {
+      if (method === r.method && String(regex) === String(r.regex)) {
+        throw new Error(`Duplicate endpoint found: ${method} ${endpoint}`);
+      }
     }
+
     this.routes.add({
       method,
       handler,
@@ -61,7 +62,7 @@ class GalaxiteServer {
     const url = req.url || "";
     let [path, query] = url.split("?");
     if (path.endsWith("/")) path = path.substring(0, path.length - 1);
-    req.route = { query: { ...qs.parse(query) } };
+    req.route = { query: { ...qs.parse(query) }, path: path || '/' };
     let route;
     for (const r of this.routes) {
       if (r.method !== method) continue;
@@ -87,6 +88,9 @@ class GalaxiteServer {
 
   async #handleRequest(req, res) {
     let route = this.#parseRoute(req);
+    if (this.staticDirectory) {
+      return provideFile(`${this.staticDirectory}${req.route.path}`, res);
+    }
 
     req.cookies = parseCookies(req);
 
@@ -111,13 +115,17 @@ class GalaxiteServer {
     return next();
   }
 
+  serveStatic(dir) {
+    if (pathExists(dir)) this.staticDirectory = dir;
+  }
+
   close(callback) {
     this.server.close((err) => callback(err));
   }
 
   listen(port, callback) {
     this.server = http.createServer(
-      async (req, res) => {
+      (req, res) => {
         req.query = {};
         Object.assign(res, ResponseHelpers);
         if (this.options.cors.enabled) {
@@ -140,7 +148,7 @@ class GalaxiteServer {
             `${this.options.cors.maxAge}`
           );
         }
-        await this.#handleRequest(req, res);
+        this.#handleRequest(req, res);
       }
     );
     this.server.listen(port, () => callback(port));

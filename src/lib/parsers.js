@@ -1,9 +1,10 @@
 const qs = require("querystring");
 const formidable = require("formidable");
-const { existsSync, mkdirSync } = require("fs")
+const { existsSync: pathExists, mkdirSync, readFile } = require("fs");
+const mimeTypes = require('./mime-types.json');
 
 const handleDirectory = (directoryPath) => {
-  if (!existsSync(directoryPath)) {
+  if (!pathExists(directoryPath)) {
     mkdirSync(directoryPath, { recursive: true });
   }
 };
@@ -69,4 +70,19 @@ const parseCookies = (request) => {
   }, {});
 };
 
-module.exports = { getBody, extractParamNames, patternToRegex, parseCookies, qs };
+const contentTypeByPathExtension = (path) => mimeTypes.find(({extension}) => extension === path.split('.').reverse()[0])?.mime_type || 'application/octet-stream';
+
+const provideFile = (path, res) => {
+  if (pathExists(path)) {
+    if (!path.split('/').reverse()[0]) path += 'index.html'
+    readFile(`${path}`, function (error, pgResp) {
+      if (error) {
+        res.status(404).send('Contents you are looking are Not Found');
+      } else {
+        res.status(200).setHeader('Content-Type', contentTypeByPathExtension(path)).send(pgResp);
+      }
+    });
+  }
+}
+
+module.exports = { getBody, extractParamNames, patternToRegex, parseCookies, qs, pathExists, provideFile };
