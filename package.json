@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "types": "@types/index.d.ts",
   "scripts": {
-    "test": "npx jest"
+    "test": "npx jest \"__tests__/.*\\.spec\\.js\""
   },
   "keywords": [],
   "author": "",
