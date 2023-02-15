@@ -10,7 +10,7 @@ describe('Router', () => {
     server
         .route("/echo/:timestamp/*")
         .get((req, res) => {
-            return res.status(200).json({ ...req.route });
+            return res.status(200).json({ ...req.router });
         })
 
     let params = {
