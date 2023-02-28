@@ -27,7 +27,7 @@ server.use((req, res, next) => {
 });
 
 server.route("/users/:user_id").get((req, res) => {
-  return res.status(200).text(`User ID: ${req.route.params.user_id}`);
+  return res.status(200).text(`User ID: ${req.router.params.user_id}`);
 });
 
 server
@@ -41,3 +41,29 @@ server
 
 server.listen(3000, () => console.log(`Listening on :3000`));
 ```
+
+## Performance
+
+Benchmark results for 1000 requests with 100 concurrent users:
+
+- Galaxite.js
+  ```
+  Connection Times (ms)
+                min    mean[+/-sd]   median     max
+  Connect:        0      1   0.8        1         4
+  Processing:     3     10   2.6       10        17
+  Waiting:        0      7   2.0        7        14
+  Total:          4     11   2.6       11        17
+  ```
+
+- Express.js
+  ```
+  Connection Times (ms)
+                min    mean[+/-sd]   median     max
+  Connect:        0      1   0.9        1         4
+  Processing:     1     30   6.5       31        38
+  Waiting:        1     20   7.3       21        33
+  Total:          4     31   6.1       32        39
+  ```
+
+> Galaxite.js performs significantly better than Express.js in terms of processing time, with a mean processing time of 10ms compared to Express.js's mean processing time of 30ms. This makes Galaxite.js a great choice for use cases where performance is a top priority.
