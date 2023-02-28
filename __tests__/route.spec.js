@@ -10,7 +10,7 @@ describe('Router', () => {
     server
         .route("/echo/:timestamp/*")
         .get((req, res) => {
-            return res.status(200).json({ ...req.route });
+            return res.status(200).json({ ...req.router });
         })
 
     let params = {
@@ -47,7 +47,7 @@ describe('Router', () => {
             data += chunk;
         });
         response.on('end', () => {
-            expect(data).toEqual(JSON.stringify({ query, path, params }));
+            expect(data).toEqual(JSON.stringify({ query, path, params, method: "GET" }));
             done();
         });
     });
