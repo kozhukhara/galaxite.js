@@ -48,12 +48,12 @@ class Router {
             let wildcardEntryFound = false;
             for (const child of currentNode.children) {
                 if (child.isParam && !child.isWildcard) {
-                    params[child.key.slice(1)] = segment;
+                    params[child.key.slice(1)] = decodeURIComponent(segment);
                     currentNode = child;
                     found = true;
                     break;
                 } else if (child.isWildcard) {
-                    params['slug'] = segments.slice(segments.indexOf(segment)).join('/');
+                    params['slug'] = decodeURIComponent(segments.slice(segments.indexOf(segment)).join('/'));
                     currentNode = child;
                     found = wildcardEntryFound = true;
                     break;
