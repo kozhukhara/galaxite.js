@@ -47,7 +47,7 @@ describe('Router', () => {
             data += chunk;
         });
         response.on('end', () => {
-            expect(data).toEqual(JSON.stringify({ query, path, params }));
+            expect(data).toEqual(JSON.stringify({ query, path, params, method: "GET" }));
             done();
         });
     });
