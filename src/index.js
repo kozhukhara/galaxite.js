@@ -28,16 +28,19 @@ class GalaxiteServer {
 
   async #handleRequest(req, res) {
     const { handler, router } = this.router.parseRoute(req);
-    req.router = router;
+
     if (this.staticDirectory) {
-      return provideFile(`${this.staticDirectory}${req.router.path}`, res);
+      let fileSent = await provideFile(`${this.staticDirectory}${router.path}`, res);
+      if (fileSent) return;
+    }
+    switch (handler) {
+      case null: return res.status(404).send("404 Not Found");
+      case undefined: return res.status(501).send(`Cannot ${router.method} ${router.path}`);
+      default: break;
     }
 
+    req.router = router;
     req.cookies = parseCookies(req);
-
-    if (!handler) {
-      return res.status(404).send("404 Not Found");
-    }
 
     if (["POST", "PUT", "PATCH"].includes(req.method)) {
       const data = await getBody(req, this.options.uploadDir);

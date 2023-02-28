@@ -63,19 +63,12 @@ class Router {
                     break;
                 }
             }
-            if (!found) {
-                return new Error(`No matching route for ${path}`);
-            }
             if (wildcardEntryFound) break
         }
 
-        if (!currentNode.handler) {
-            return new Error(`No matching route for ${path}`);
-        }
-
         return {
-            handler: currentNode.handler[method],
-            router: { query: { ...qs.parse(query) }, path: path || '/', params },
+            handler: (currentNode.handler) ? currentNode.handler[method] : null,
+            router: { query: { ...qs.parse(query) }, path: path || '/', params, method },
         };
     }
 }
