@@ -3,23 +3,15 @@ const { getBody, parseCookies, pathExists, provideFile } = require("./lib/parser
 const { ResponseHelpers, ServerOptions } = require("./lib/extenders");
 const Router = require("./lib/router");
 class GalaxiteServer {
+  static Router = Router;
   constructor(options = {}) {
     this.options = new ServerOptions(options);
     this.router = new Router();
     this.middlewares = [];
   }
 
-  route(endpoint) {
-    const route = {};
-
-    ['GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS'].forEach((method) => {
-      route[method.toLowerCase()] = (handler) => {
-        this.router.addRoute(method, endpoint, handler);
-        return route;
-      };
-    });
-
-    return route;
+  route(...args) {
+    return this.router.route(...args)
   }
 
   use(middleware) {
