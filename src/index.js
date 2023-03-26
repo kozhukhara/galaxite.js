@@ -61,7 +61,7 @@ class GalaxiteServer {
 
     if (corsOptions) {
       const origin = req.headers.origin;
-      if (corsOptions.origin === true || corsOptions.origin.includes(origin)) {
+      if (corsOptions.origins === true || corsOptions.origins.includes(origin)) {
         res.setHeader('Access-Control-Allow-Origin', origin);
       }
 
@@ -105,5 +105,11 @@ class GalaxiteServer {
     this.server.listen(port, () => callback(port));
   }
 }
+
+['GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS'].forEach((method) => {
+  GalaxiteServer.prototype[method.toLowerCase()] = function (endpoint, handler) {
+      this.route(endpoint)[method.toLowerCase()](handler)
+  }
+});
 
 module.exports = GalaxiteServer;
