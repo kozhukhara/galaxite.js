@@ -36,12 +36,12 @@ class Router {
 
         const route = {};
         ['GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS'].forEach((method) => {
-          route[method.toLowerCase()] = (handler) => {
-            this.addRoute(method, endpoint, handler);
-            return route;
-          };
+            route[method.toLowerCase()] = (handler) => {
+                this.addRoute(method, endpoint, handler);
+                return route;
+            };
         });
-    
+
         return route;
     }
 
@@ -74,7 +74,7 @@ class Router {
         const segments = path.split('/').filter((segment) => segment !== '');
         let currentNode = this.root;
         const params = {};
-        let found = false;
+        let found = !segments.length && !!currentNode.handler ? true : false;
         for (const segment of segments) {
             let wildcardEntryFound = false;
             found = false;
