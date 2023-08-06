@@ -1,6 +1,6 @@
 import { ServerResponse } from "http";
 
-declare interface ResponseHelpers extends ServerResponse{
+declare interface ResponseHelpers extends ServerResponse {
   status(statusCode: number): this;
   send(text: string): this;
   html(html: string): this;
@@ -16,7 +16,7 @@ declare interface ResponseHelpers extends ServerResponse{
       path?: string;
       secure?: boolean;
       httpOnly?: boolean;
-    }
+    },
   ): void;
   deleteCookie(key: string): void;
 }

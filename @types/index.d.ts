@@ -34,12 +34,10 @@ interface Route {
 type Middleware = (
   req: IncomingMessage,
   res: ServerResponse,
-  next: Next
-) => Next;
+  next: Middleware | void,
+) => void;
 
 type Handler = (req: IncomingMessage, res: ServerResponse) => ServerResponse;
-
-type Next = (middleware: Middleware) => void;
 
 type Callback = (err?: any) => void;
 
