@@ -47,6 +47,7 @@ server.listen(3000, () => console.log(`Listening on :3000`));
 Benchmark results for 1000 requests with 100 concurrent users:
 
 - Galaxite.js
+
   ```
   Connection Times (ms)
                 min    mean[+/-sd]   median     max
