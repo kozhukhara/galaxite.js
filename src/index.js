@@ -9,10 +9,17 @@ class GalaxiteServer {
     this.router = new Router();
     this.middlewares = [];
   }
+    route(endpoint) {
+        const route = {};
+        ['GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS'].forEach((method) => {
+            route[method.toLowerCase()] = (handler) => {
+                this.router.addRoute(method, endpoint, handler);
+                return route;
+            };
+        });
 
-  route(...args) {
-    return this.router.route(...args)
-  }
+        return route;
+    }
 
   use(middleware) {
     this.middlewares.push(middleware);
@@ -105,11 +112,5 @@ class GalaxiteServer {
     this.server.listen(port, () => callback(port));
   }
 }
-
-['GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS'].forEach((method) => {
-  GalaxiteServer.prototype[method.toLowerCase()] = function (endpoint, handler) {
-      this.route(endpoint)[method.toLowerCase()](handler)
-  }
-});
 
 module.exports = GalaxiteServer;
