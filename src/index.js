@@ -19,6 +19,11 @@ class GalaxiteServer {
   }
 
   async #handleRequest(req, res) {
+    const corsSent = await this.#checkCors(req, res);
+    if (corsSent) {
+      return;
+    }
+
     const { handler, router } = this.router.parseRoute(req);
 
     if (this.staticDirectory) {
@@ -51,6 +56,36 @@ class GalaxiteServer {
     return next();
   }
 
+  async #checkCors(req, res) {
+    const corsOptions = this.options.cors;
+
+    if (corsOptions) {
+      const origin = req.headers.origin;
+      if (corsOptions.origins === true || corsOptions.origins.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+      }
+
+      if (corsOptions.credentials) {
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
+      }
+
+      if (corsOptions.headers) {
+        res.setHeader('Access-Control-Allow-Headers', corsOptions.headers.join(', '));
+      }
+
+      if (corsOptions.methods) {
+        res.setHeader('Access-Control-Allow-Methods', corsOptions.methods.join(', '));
+      }
+
+      if (req.method === 'OPTIONS') {
+        res.statusCode = 204;
+        res.end();
+        return true;
+      }
+    }
+    return false;
+  }
+
   serveStatic(dir) {
     if (pathExists(dir)) this.staticDirectory = dir;
   }
@@ -64,26 +99,6 @@ class GalaxiteServer {
       (req, res) => {
         req.query = {};
         Object.assign(res, ResponseHelpers);
-        if (this.options.cors.enabled) {
-          if (
-            (this.options.cors.origin.includes("*") ||
-              (!!req.headers.host &&
-                this.options.cors.origin.includes(req.headers.host)))
-          )
-            res.setHeader(
-              "Access-Control-Allow-Origin",
-              `${req.headers.host}`
-            );
-          if (this.options.cors.methods.length)
-            res.setHeader(
-              "Access-Control-Allow-Methods",
-              this.options.cors.methods.join(",  ")
-            );
-          res.setHeader(
-            "Access-Control-Max-Age",
-            `${this.options.cors.maxAge}`
-          );
-        }
         this.#handleRequest(req, res);
       }
     );
