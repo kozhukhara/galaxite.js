@@ -10,17 +10,8 @@ class GalaxiteServer {
     this.middlewares = [];
   }
 
-  route(endpoint) {
-    const route = {};
-
-    ['GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS'].forEach((method) => {
-      route[method.toLowerCase()] = (handler) => {
-        this.router.addRoute(method, endpoint, handler);
-        return route;
-      };
-    });
-
-    return route;
+  route(...args) {
+    return this.router.route(...args)
   }
 
   use(middleware) {
